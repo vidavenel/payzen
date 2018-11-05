@@ -9,6 +9,7 @@
 namespace Vidavenel\Payzen\Tests;
 
 use Orchestra\Testbench\TestCase;
+use Vidavenel\Payzen\PayzenService;
 use Vidavenel\Payzen\PayzenServiceProvider;
 
 class TestPayzenService extends TestCase
@@ -45,7 +46,7 @@ class TestPayzenService extends TestCase
             'adresse' => '3 rue des roses',
             'cp' => '75 000'
         ];
-        $service = resolve('payzen');
+        $service = resolve(PayzenService::class);
 
         $this->assertTrue($service->checkAdresse($true_address));
         $this->assertFalse($service->checkAdresse($false_address));
@@ -53,7 +54,7 @@ class TestPayzenService extends TestCase
 
     public function testCalculSignature()
     {
-        $service = resolve('payzen');
+        $service = resolve(PayzenService::class);
         $array = [
             'vads_action_mode' => 'INTERACTIVE',
             'vads_ctx_mode' => 'TEST',

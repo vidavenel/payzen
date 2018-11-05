@@ -65,11 +65,11 @@ class PayzenService
         ];
         $opt_commande = [
             'vads__nb_products' => 1,
-            'vads_product_amount' => [$commande->getPrix()],
-            'vads_product_label' => ['Carte grise'],
-            'vads_product_qty' => [1],
-            'vads_product_ref' => ['TCG'],
-            'vads_product_type' =>  ['AUTOMOTIVE']
+            'vads_product_amount0' => $commande->getPrix(),
+            'vads_product_label0' => 'Carte grise',
+            'vads_product_qty0' => 1,
+            'vads_product_ref0' => 'TCG',
+            'vads_product_type0' =>  'AUTOMOTIVE'
         ];
         $opt_acheteur = [
             'vads_cust_last_name' => $_client->getNom(),
