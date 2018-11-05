@@ -23,5 +23,12 @@
         "psr-4": {
             "Vidavenel\\Payzen\\Tests\\": "tests/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vidavenel\\Payzen\\PayzenServiceProvider"
+            ]
+        }
     }
 }
