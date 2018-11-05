@@ -50,7 +50,7 @@ class PayzenService
             'vads_action_mode' => 'INTERACTIVE',
             'vads_ctx_mode' => $this->mode,
             'vads_page_action' => 'PAYMENT',
-            'vads_site_id' => $this->site,
+            'vads_site_id' => $this->site_id,
             'vads_version' => 'V2'
         ];
         $opt_transaction = [
