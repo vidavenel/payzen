@@ -48,8 +48,10 @@ class TestPayzenService extends TestCase
         ];
         $service = resolve(PayzenService::class);
 
-        $this->assertTrue($service->checkAdresse($true_address));
-        $this->assertFalse($service->checkAdresse($false_address));
+        $result_true = $this->invokeMethod($service, 'checkAdresse', [$true_address]);
+        $this->assertTrue($result_true);
+        $result_false = $this->invokeMethod($service, 'checkAdresse', [$false_address]);
+        $this->assertFalse($result_false);
     }
 
     public function testCalculSignature()

@@ -8,6 +8,7 @@
 
 namespace Vidavenel\Payzen;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
 
 class PayzenService
@@ -29,13 +30,18 @@ class PayzenService
 
     public function form(CommandeInterface $commande, $idform = 'payzen_form')
     {
-        $paiement = Paiement::create([
-            'commande_id' => $commande->id,
-            'order_id' => 0,
-            'trans_id' => 0,
-            'trans_date' => gmdate('YmdHis'),
-            'prix' => $commande->getPrix()
+        /** @var Paiement $paiement */
+        $paiement = Paiement::firstOrNew([
+            'commande_id' => $commande->getId(),
+            'statut' => null
+            ],
+            [
+            'order_id' => $this->calulOrderId($commande->getId()),
+            'trans_id' => $this->calculTransId(),
         ]);
+        $paiement->trans_date = gmdate('YmdHis');
+        $paiement->prix = $commande->getPrix();
+        $paiement->save();
 
         $vads = $this->getVars($commande, $paiement);
         $signature = $this->calculSignature($vads);
@@ -111,7 +117,7 @@ class PayzenService
      * @param array $adresse
      * @return bool
      */
-    public function checkAdresse(array $adresse)
+    private function checkAdresse(array $adresse)
     {
         foreach (['adresse', 'cp', 'ville'] as $cle) {
             if (!array_key_exists($cle, $adresse))
@@ -130,5 +136,20 @@ class PayzenService
         ksort($table);
         $string = implode('', $table);
         return SHA1($string);
+    }
+
+    private function calulOrderId($idCommande)
+    {
+        $count = Paiement::where('commande_id', $idCommande)->count();
+        if ($count < 10 ) {
+            $count = "0".$count;
+        }
+        return $idCommande.$count;
+    }
+
+    private function calculTransId()
+    {
+        $date = Carbon::now()->format('Y-m-d');
+        return Paiement::whereDate('created_at', $date)->count() + 1;
     }
 }
