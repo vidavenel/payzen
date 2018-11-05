@@ -1,0 +1,27 @@
+{
+    "name": "vidavenel/payzen",
+    "description": "package laravel payement paltform payzen",
+    "authors": [
+        {
+            "name": "Vincent DAVENEL",
+            "email": "vincent@aigle-developpement.com"
+        }
+    ],
+    "require": {
+        "illuminate/database": "v5.7.11",
+        "illuminate/view": "v5.7.11"
+    },
+    "require-dev": {
+        "orchestra/testbench": "~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vidavenel\\Payzen\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vidavenel\\Payzen\\Tests\\": "tests/"
+        }
+    }
+}
