@@ -29,8 +29,15 @@ class PayzenService
 
     public function form(CommandeInterface $commande, $idform = 'payzen_form')
     {
-        $this->commande = $commande;
-        $vads = $this->getVars($commande);
+        $paiement = Paiement::create([
+            'commande_id' => $commande->id,
+            'order_id' => 0,
+            'trans_id' => 0,
+            'trans_date' => gmdate('YmdHis'),
+            'prix' => $commande->getPrix()
+        ]);
+
+        $vads = $this->getVars($commande, $paiement);
         $signature = $this->calculSignature($vads);
 
         return View::make('payzen::form', ['id_form' => $idform, 'vads' => $vads, 'signature' => $signature]);
@@ -39,9 +46,10 @@ class PayzenService
     /**
      * init des variables du formulaire
      * @param CommandeInterface $commande
+     * @param Paiement $paiement
      * @return array
      */
-    private function getVars(CommandeInterface $commande)
+    private function getVars(CommandeInterface $commande, Paiement $paiement)
     {
         $_client = $commande->getClient();
         $_adresse = $_client->getAdresse();
@@ -54,18 +62,18 @@ class PayzenService
             'vads_version' => 'V2'
         ];
         $opt_transaction = [
-            'vads_amount' =>  $commande->getPrix(),
+            'vads_amount' =>  $paiement->prix,
             'vads_capture_delay' => 0,
             'vads_currency' => 978,
             'vads_payment_config' => 'SINGLE',
-            'vads_trans_id' => 0,
-            'vads_order_id' =>  $commande->getId(),
+            'vads_trans_id' => $paiement->trans_id,
+            'vads_order_id' =>  $paiement->order_id,
             'vads_validation_mode' => 0,
-            'vads_trans_date' =>  gmdate('YmdHis'),
+            'vads_trans_date' =>  $paiement->trans_date
         ];
         $opt_commande = [
             'vads__nb_products' => 1,
-            'vads_product_amount0' => $commande->getPrix(),
+            'vads_product_amount0' => $paiement->prix,
             'vads_product_label0' => 'Carte grise',
             'vads_product_qty0' => 1,
             'vads_product_ref0' => 'TCG',
