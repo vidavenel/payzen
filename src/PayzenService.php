@@ -33,7 +33,7 @@ class PayzenService
         $vads = $this->getVars($commande);
         $signature = $this->calculSignature($vads);
 
-        return View::make('payplug::form', ['id' => $commande->getId(), 'vads' => $vads, 'signature' => $signature]);
+        return View::make('payzen::form', ['id' => $commande->getId(), 'vads' => $vads, 'signature' => $signature]);
     }
 
     /**
