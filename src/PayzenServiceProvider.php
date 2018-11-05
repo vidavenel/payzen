@@ -20,7 +20,7 @@ class PayzenServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('payzen', function ($app) {
-            return new PayzenService();
+            return new PayzenService('123');
         });
     }
 }

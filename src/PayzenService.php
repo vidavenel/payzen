@@ -12,106 +12,115 @@ use Illuminate\Support\Facades\View;
 
 class PayzenService
 {
-    private $vads_action_mode;
-    private $vads_ctx_mode;
-    private $vads_page_action;
-    private $vads_site_id;
-    private $vads_version;
-
-    private $vads_capture_delay;
-    private $vads_currency;
-    private $vads_payment_config;
-    private $vads_validation_mode;
-
-    private $vads_trans_date;
-    private $vads_trans_id;
-    private $vads_amount;
+    private $mode;
+    private $site_id;
 
     /**
      * PayzenService constructor.
      * @param string $mode TEST | PRODUCTION
      */
+    const INTERACTIVE = 'INTERACTIVE';
+
     public function __construct($site_id, $mode = 'TEST')
     {
-        $this->vads_action_mode = 'INTERACTIVE';
-        $this->vads_ctx_mode = $mode;
-        $this->vads_page_action = 'PAYMENT';
-        $this->vads_site_id = $site_id;
-        $this->vads_version = 'V2';
-
-        $this->vads_capture_delay = 0;
-        $this->vads_currency = 978;
-        $this->vads_payment_config = 'SINGLE';
-        $this->vads_validation_mode = 0;
+        $this->mode = $mode;
+        $this->site_id = $site_id;
     }
 
-    public function form()
+    public function form(CommandeInterface $commande)
     {
-        return View::make('payplug::form');
+        $this->commande = $commande;
+        $vads = $this->getVars($commande);
+        $signature = $this->calculSignature($vads);
+
+        return View::make('payplug::form', ['id' => $commande->getId(), 'vads' => $vads, 'signature' => $signature]);
     }
 
-    private function calculSignature()
+    /**
+     * init des variables du formulaire
+     * @param CommandeInterface $commande
+     * @return array
+     */
+    private function getVars(CommandeInterface $commande)
     {
-        $vads_Array = array (
+        $_client = $commande->getClient();
+        $_adresse = $_client->getAdresse();
 
+        $opt_tech = [
             'vads_action_mode' => 'INTERACTIVE',
-            'vads_amount' => ($TotalPanierResume * 100), // En centimes
-            'vads_capture_delay' => '0',
-            // 'vads_ctx_mode' => 'TEST', // A MODIFIER EN PROD
-            'vads_ctx_mode' => 'PRODUCTION',
-            'vads_currency' => '978',
+            'vads_ctx_mode' => $this->mode,
             'vads_page_action' => 'PAYMENT',
-            // 'vads_payment_config' => 'MULTI:first='.$x3Montant1.';count='.$NbEcheances.';period=30',
+            'vads_site_id' => $this->site,
+            'vads_version' => 'V2'
+        ];
+        $opt_transaction = [
+            'vads_amount' =>  $commande->getPrix(),
+            'vads_capture_delay' => 0,
+            'vads_currency' => 978,
             'vads_payment_config' => 'SINGLE',
-            'vads_payment_option_code' => $vads_payment_option_code,
-            // 'vads_site_id' => '87894583',
-            'vads_site_id' => '46788809',
-            'vads_trans_date' => gmdate('YmdHis'),
-            'vads_trans_id' => date('His'),
-            'vads_validation_mode' => '0',
-            'vads_version' => 'V2',
-            'vads_order_id' => $session_id,
-            'vads_payment_cards' => 'ONEY',
-            'vads_payment_option_code' => $vads_payment_option_code,
-            'vads_cust_status' => 'PRIVATE',
-            // Répété plus bas pour les 4 prochaines lignes
-            /* 'vads_ship_to_status' => 'PRIVATE', // COMPANY pour un Pro
-            'vads_ship_to_type' => 'PACKAGE_DELIVERY_COMPANY',
-            'vads_ship_to_speed' => 'STANDARD',
-            'vads_ship_to_delivery_company_name' => 'XXX', */
-            // PANIER
-            'vads_nb_products' => 1,
-            'vads_product_amount0' => ($TotalPanierResume * 100),
-            'vads_product_qty0' => 1,
-            'vads_product_label0' => $vads_product_labelN,
-            'vads_product_ref0' => 'TCG',
-            'vads_product_type0' => 'AUTOMOTIVE',
-            // LE CLIENT
-            'vads_cust_first_name' => $PaypalPrenom,
-            'vads_cust_last_name' => $PaypalNom,
-            'vads_cust_address' => $PaypalAdresse1,
-            'vads_cust_zip' => $PaypalCodePostal,
-            'vads_cust_city' => $PaypalVille,
+            'vads_trans_id' => 0,
+            'vads_order_id' =>  $commande->getId(),
+            'vads_validation_mode' => 0,
+            'vads_trans_date' =>  gmdate('YmdHis'),
+        ];
+        $opt_commande = [
+            'vads__nb_products' => 1,
+            'vads_product_amount' => [$commande->getPrix()],
+            'vads_product_label' => ['Carte grise'],
+            'vads_product_qty' => [1],
+            'vads_product_ref' => ['TCG'],
+            'vads_product_type' =>  ['AUTOMOTIVE']
+        ];
+        $opt_acheteur = [
+            'vads_cust_last_name' => $_client->getNom(),
+            'vads_cust_first_name' => $_client->getPrenom(),
+            'vads_cust_address' => $_adresse['adresse'],
+            'vads_cust_zip' => $_adresse['cp'],
+            'vads_cust_city' => $_adresse['ville'],
             'vads_cust_country' => 'FR',
-            'vads_cust_email' => $email,
-            // ADRESSE DE LIVRAISON (Pour Oney seulement)
-            'vads_ship_to_city' => $PaypalVille,
+            'vads_cust_email' => $_client->getMail(),
+            'vads_cust_id' => $_client->getId(),
+            'vads_cust_status' => 'PRIVATE',
+        ];
+        $opt_livraison = [
+            'vads_ship_to_city' => $_adresse['ville'],
             'vads_ship_to_country' => 'FR',
-            'vads_ship_to_delivery_company_name' => 'La Poste',
-            'vads_ship_to_first_name' => $PaypalPrenom,
-            'vads_ship_to_last_name' => $PaypalNom,
-            'vads_ship_to_phone_num' => $vads_ship_to_phone_num,
+            'vads_ship_to_delivery_company_name' => 'La poste',
+            'vads_cust_first_name' => $_client->getPrenom(),
+            'vads_ship_to_last_name' => $_client->getNom(),
+            'vads_ship_to_phone_num' => $_client->getPhone(),
             'vads_ship_to_speed' => 'STANDARD',
             'vads_ship_to_status' => 'PRIVATE',
-            'vads_ship_to_street' => $PaypalAdresse1,
+            'vads_ship_to_street' => $_adresse['adresse'],
             'vads_ship_to_type' => 'PACKAGE_DELIVERY_COMPANY',
-            'vads_ship_to_zip' => $PaypalCodePostal,
-            // URL DE RETOUR AUTOMATIQUE
-            'vads_redirect_success_timeout' => 2,
-            'vads_url_success' => 'https://www.topcartegrise.fr/mon-compte.php?Ref='.$session_id,
+            'vads_ship_to_zip' => $_adresse['cp'],
+        ];
+        return array_merge($opt_tech, $opt_transaction, $opt_commande, $opt_acheteur, $opt_livraison);
+    }
 
-        );
-        if (isset ($TelMobile)) $vads_Array['vads_cust_cell_phone'] = $TelMobile;
-        else $vads_Array['vads_cust_phone'] = $PaypalTel;
+    /**
+     * Verification du tableau adresse
+     * @param array $adresse
+     * @return bool
+     */
+    public function checkAdresse(array $adresse)
+    {
+        foreach (['adresse', 'cp', 'ville'] as $cle) {
+            if (!array_key_exists($cle, $adresse))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Calcul de la signature a inclure dans le formulaire
+     * @param array $table
+     * @return string
+     */
+    private function calculSignature(array $table)
+    {
+        ksort($table);
+        $string = implode('', $table);
+        return SHA1($string);
     }
 }
