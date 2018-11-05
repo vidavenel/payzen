@@ -18,7 +18,7 @@ class CreatePayzenPaiementsTable extends Migration
             $table->integer('commande_id');
             $table->integer('order_id');
             $table->integer('trans_id');
-            $table->integer('trans_date');
+            $table->string('trans_date');
             $table->integer('prix');
             $table->integer('statut')->nullable()->default(null);
             $table->timestamps();
