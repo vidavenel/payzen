@@ -8,8 +8,8 @@
         }
     ],
     "require": {
-        "illuminate/database": "v5.7.11",
-        "illuminate/view": "v5.7.11"
+        "illuminate/database": "5.7.*",
+        "illuminate/view": "5.7.*"
     },
     "require-dev": {
         "orchestra/testbench": "~3.0"
