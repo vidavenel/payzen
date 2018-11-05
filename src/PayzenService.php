@@ -27,13 +27,13 @@ class PayzenService
         $this->site_id = $site_id;
     }
 
-    public function form(CommandeInterface $commande)
+    public function form(CommandeInterface $commande, $idform = 'payzen_form')
     {
         $this->commande = $commande;
         $vads = $this->getVars($commande);
         $signature = $this->calculSignature($vads);
 
-        return View::make('payzen::form', ['id' => $commande->getId(), 'vads' => $vads, 'signature' => $signature]);
+        return View::make('payzen::form', ['id' => $idform, 'vads' => $vads, 'signature' => $signature]);
     }
 
     /**
