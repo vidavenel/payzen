@@ -16,12 +16,15 @@ class PayzenServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/migrations');
         $this->loadViewsFrom(__DIR__.'/views', 'payzen');
+        $this->publishes([
+            __DIR__.'config/payzen.php' => config_path('payzen.php')
+        ]);
     }
 
     public function register()
     {
         $this->app->bind(PayzenService::class, function ($app) {
-            return new PayzenService('123');
+            return new PayzenService(config('payzen.site_id'), config('payzen.mode'));
         });
     }
 }
