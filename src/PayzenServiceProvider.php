@@ -23,6 +23,9 @@ class PayzenServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->mergeConfigFrom(
+            __DIR__.'config/payzen.php', 'payzen'
+        );
         $this->app->bind(PayzenService::class, function ($app) {
             return new PayzenService(config('payzen.site_id'), config('payzen.mode'));
         });

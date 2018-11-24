@@ -6,6 +6,6 @@
  * Time: 15:30
  */
 return [
-    'site_id' => env('PAYZEN_SITE _ID', null),
+    'site_id' => env('PAYZEN_SITE_ID', null),
     'mode' => env('PAYZEN_MODE', 'TEST')
 ];
