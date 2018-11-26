@@ -82,12 +82,12 @@ class PayzenService
             'vads_trans_date' =>  $paiement->trans_date
         ];
         $opt_commande = [
-            'vads__nb_products' => 1,
-            'vads_product_amount' => $paiement->prix,
-            'vads_product_label' => 'testtest',
-            'vads_product_qty' => 1,
-            'vads_product_ref' => 'TCG',
-            'vads_product_type' =>  'AUTOMOTIVE'
+            'vads_nb_products' => 1,
+            'vads_product_amount0' => $paiement->prix,
+            'vads_product_label0' => 'testtest',
+            'vads_product_qty0' => 1,
+            'vads_product_ref0' => 'TCG',
+            'vads_product_type0' =>  'AUTOMOTIVE'
         ];
         $opt_acheteur = [
             'vads_cust_last_name' => $_client->getNom(),
