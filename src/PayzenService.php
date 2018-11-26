@@ -71,6 +71,7 @@ class PayzenService
             'vads_version' => 'V2'
         ];
         $opt_transaction = [
+            'vads_payment_cards' => $this->mode === 'TEST' ? 'ONEY_SANDBOX' : 'ONEY',
             'vads_amount' =>  $paiement->prix,
             'vads_capture_delay' => 0,
             'vads_currency' => 978,
