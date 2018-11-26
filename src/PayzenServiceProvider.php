@@ -27,7 +27,7 @@ class PayzenServiceProvider extends ServiceProvider
             __DIR__.'/config/payzen.php', 'payzen'
         );
         $this->app->bind(PayzenService::class, function ($app) {
-            return new PayzenService(config('payzen.site_id'), config('payzen.mode'));
+            return new PayzenService(config('payzen.site_id'), config('payzen.mode'), config('payzen.debug'));
         });
     }
 }

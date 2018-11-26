@@ -9,12 +9,14 @@
 namespace Vidavenel\Payzen;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 
 class PayzenService
 {
     private $mode;
     private $site_id;
+    private $debug;
 
     /**
      * PayzenService constructor.
@@ -22,10 +24,11 @@ class PayzenService
      */
     const INTERACTIVE = 'INTERACTIVE';
 
-    public function __construct($site_id, $mode = 'TEST')
+    public function __construct($site_id, $mode = 'TEST', $debug = false)
     {
         $this->mode = $mode;
         $this->site_id = $site_id;
+        $this->debug = $debug;
     }
 
     public function form(CommandeInterface $commande, $idform = 'payzen_form')
@@ -134,6 +137,15 @@ class PayzenService
     private function calculSignature(array $table)
     {
         ksort($table);
+
+        if ($this->debug) {
+            $str = "";
+            foreach ($table as $k => $value) {
+                $str .= "$k => $value - ";
+            }
+            Log::debug($str);
+        }
+
         $string = implode('', $table) . config('payzen.key');
         return SHA1($string);
     }

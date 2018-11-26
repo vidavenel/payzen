@@ -8,5 +8,6 @@
 return [
     'site_id' => env('PAYZEN_SITE_ID', null),
     'mode' => env('PAYZEN_MODE', 'TEST'),
-    'key' => env('PAYZEN_KEY', 0000000000000000)
+    'key' => env('PAYZEN_KEY', 0000000000000000),
+    'debug' => env('PAYZEN_DEBUG', false)
 ];
