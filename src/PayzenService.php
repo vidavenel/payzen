@@ -146,7 +146,7 @@ class PayzenService
             Log::debug($str);
         }
 
-        $string = implode('+', $table) . "+" . config('payzen.key');
+        $string = trim(implode('+', $table) . "+" . config('payzen.key'));
         if ($this->debug)  Log::debug("chaine avant encodage : $string");
 
         $encoded_string = SHA1($string);
