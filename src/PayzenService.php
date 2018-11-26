@@ -84,7 +84,7 @@ class PayzenService
         $opt_commande = [
             'vads__nb_products' => 1,
             'vads_product_amount0' => $paiement->prix,
-            'vads_product_label0' => 'carte grise',
+            'vads_product_label0' => 'Carte Grise',
             'vads_product_qty0' => 1,
             'vads_product_ref0' => 'TCG',
             'vads_product_type0' =>  'AUTOMOTIVE'
