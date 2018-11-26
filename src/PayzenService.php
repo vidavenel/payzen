@@ -134,7 +134,7 @@ class PayzenService
     private function calculSignature(array $table)
     {
         ksort($table);
-        $string = implode('', $table);
+        $string = implode('', $table) . config('payzen.key');
         return SHA1($string);
     }
 
