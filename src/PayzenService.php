@@ -72,7 +72,7 @@ class PayzenService
             'vads_capture_delay' => 0,
             'vads_currency' => 978,
             'vads_payment_config' => 'SINGLE',
-            'vads_trans_id' => $paiement->trans_id,
+            'vads_trans_id' => str_pad($paiement->trans_id, 6, '0', STR_PAD_LEFT),
             'vads_order_id' =>  $paiement->order_id,
             'vads_validation_mode' => 0,
             'vads_trans_date' =>  $paiement->trans_date
